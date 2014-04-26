@@ -48,7 +48,7 @@ command `develop-ember-cli`):
 ``` JavaScript
 // e.g. commands/develop-ember-cli.js
 
-var Command = require('../command');
+var Command = require('../models/command');
 
 module.exports = new Command({
   name: 'develop-ember-cli',    // Optional, default is the filename

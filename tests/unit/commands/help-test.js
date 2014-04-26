@@ -3,7 +3,7 @@
 var expect  = require('chai').expect;
 var MockUI  = require('../../helpers/mock-ui');
 var rewire  = require('rewire');
-var Command = rewire('../../../lib/command');
+var Command = rewire('../../../lib/models/command');
 
 describe('help command', function() {
   var ui;

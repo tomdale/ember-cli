@@ -13,7 +13,9 @@ var argv;
 var isWithinProject;
 // helper to similate running the CLI
 function ember(args) {
-  return new CLI(ui).run({
+  return new CLI({
+    ui: ui
+  }).run({
     tasks:    {},
     commands: commands,
     cliArgs:  args || [],

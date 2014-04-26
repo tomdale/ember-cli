@@ -1,7 +1,7 @@
 'use strict';
 
 var assert  = require('../helpers/assert');
-var Command = require('../../lib/command');
+var Command = require('../../lib/models/command');
 var command;
 var called = false;
 var ui = {};
