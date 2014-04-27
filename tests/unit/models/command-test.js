@@ -41,7 +41,7 @@ var OutsideProjectCommand = Command.extend({
   usageInstructions: function() {}
 });
 
-describe.only('models/command.js', function() {
+describe('models/command.js', function() {
   var output;
   var ui;
   var analytics;
