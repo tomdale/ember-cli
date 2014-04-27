@@ -1,57 +1,63 @@
 'use strict';
 
-var assert   = require('../../helpers/assert');
-var stub     = require('../../helpers/stub').stub;
-var MockUI   = require('../../helpers/mock-ui');
-var Promise  = require('../../../lib/ext/promise');
-var Task     = require('../../../lib/models/task');
+var assert          = require('../../helpers/assert');
+var stub            = require('../../helpers/stub').stub;
+var MockUI          = require('../../helpers/mock-ui');
+var MockAnalytics   = require('../../helpers/mock-analytics');
+var Promise         = require('../../../lib/ext/promise');
+var Task            = require('../../../lib/models/task');
 
-var command = require('../../../lib/commands/test');
+var TestCommand = require('../../../lib/commands/test');
 
 describe('test command', function() {
   var ui;
-  var env;
+  var analytics;
+  var tasks;
 
   beforeEach(function(){
     ui = new MockUI();
+    analytics = new MockAnalytics();
   });
 
   before(function(){
-    env = {
-      tasks: {
-        build: new Task({
-          run: function() { }
-        }),
-        test: new Task({
-          run: function() { }
-        })
-      }
+    tasks = {
+      build: new Task({
+        run: function() { }
+      }),
+      test: new Task({
+        run: function() { }
+      })
     };
 
-    stub(env.tasks.test, 'run', Promise.resolve());
-    stub(env.tasks.build, 'run', Promise.resolve());
+    stub(tasks.test, 'run', Promise.resolve());
+    stub(tasks.build, 'run', Promise.resolve());
   });
 
   it('builds and runs test', function() {
-    var buildRun = env.tasks.build.run;
-    var testRun = env.tasks.test.run;
+    var buildRun = tasks.build.run;
+    var testRun = tasks.test.run;
 
-    command.ui = ui;
-    return command.run(env, {})
-      .then(function(){
-        assert.equal(buildRun.called, 1, 'expected build task to be called once');
-        assert.equal(testRun.called, 1, 'expected test task to be called once');
-      });
+    new TestCommand({
+      ui: ui,
+      analytics: analytics,
+      tasks: tasks,
+      isWithinProject: true
+    }).validateAndRun([]).then(function(){
+      assert.equal(buildRun.called, 1, 'expected build task to be called once');
+      assert.equal(testRun.called, 1, 'expected test task to be called once');
+    });
   });
 
   it('has the correct options', function() {
-    var buildRun = env.tasks.build.run;
-    var testRun = env.tasks.test.run;
-    var options = { configFile: 'tests/testem.json' };
+    var buildRun = tasks.build.run;
+    var testRun = tasks.test.run;
 
-    command.ui = ui;
-    return command.run(env, options)
-      .then(function(){
+    new TestCommand({
+      ui: ui,
+      analytics: analytics,
+      tasks: tasks,
+      isWithinProject: true
+    }).validateAndRun([]).then(function(){
         var buildOptions = buildRun.calledWith[0][0];
         var testOptions = testRun.calledWith[1][0];
 
