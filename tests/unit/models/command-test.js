@@ -6,7 +6,7 @@ var UI             = require('../../../lib/ui');
 var through        = require('through');
 var Command        = require('../../../lib/models/command');
 
-var serveCommand = new Command({
+var serveCommand = new Command.extend({
   name: 'serve',
   aliases: ['s'],
   works: 'everywhere',
@@ -16,7 +16,8 @@ var serveCommand = new Command({
   run: function() {},
   usageInstructions: function() {}
 });
-var developEmberCLICommand = new Command({
+
+var developEmberCLICommand = new Command.extend({
   name: 'develop-ember-cli',
   works: 'everywhere',
   availableOptions: [
@@ -25,13 +26,15 @@ var developEmberCLICommand = new Command({
   run: function() {},
   usageInstructions: function() {}
 });
-var insideProjectCommand = new Command({
+
+var insideProjectCommand = new Command.extend({
   name: 'inside-project',
   works: 'insideProject',
   run: function() {},
   usageInstructions: function() {}
 });
-var outsideProjectCommand = new Command({
+
+var outsideProjectCommand = new Command.extend({
   name: 'outside-project',
   works: 'outsideProject',
   run: function() {},

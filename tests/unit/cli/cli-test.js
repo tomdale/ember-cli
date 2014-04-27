@@ -4,8 +4,6 @@ var assert   = require('../../helpers/assert');
 var stub     = require('../../helpers/stub').stub;
 var MockUI   = require('../../helpers/mock-ui');
 var CLI      = require('../../../lib/cli/cli');
-var extend   = require('lodash-node/compat/objects/assign');
-
 var ui;
 var commands;
 var argv;
@@ -15,6 +13,7 @@ var isWithinProject;
 function ember(args) {
   return new CLI({
     ui: ui,
+    analytics: { track: function() { } },
     testing: true
   }).run({
     tasks:    {},
@@ -25,7 +24,7 @@ function ember(args) {
 }
 
 function stubCommand(name) {
-  commands[name] = extend({}, require('../../../lib/commands/' + name));
+  commands[name] = require('../../../lib/commands/' + name);
   return stub(commands[name], 'run');
 }
 

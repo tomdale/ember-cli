@@ -8,7 +8,7 @@ var through        = require('through');
 var UI             = require('../../../lib/ui');
 
 var commands = {
-  serve: new Command({
+  serve: new Command.extend({
     name: 'serve',
     aliases: ['s'],
     works: 'everywhere',
@@ -41,6 +41,7 @@ describe('cli/lookup-command.js', function() {
     expect(lookupCommand(commands, 'serve')).to.exist;
     expect(lookupCommand(commands, 's')).to.exist;
   });
+
   it('lookupCommand() should return UnknownCommand object when command name is not present.', function() {
     var command = lookupCommand(commands, 'something-else');
     command.ui = ui;

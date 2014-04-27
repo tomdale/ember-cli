@@ -2,31 +2,38 @@
 
 var assert  = require('../helpers/assert');
 var Command = require('../../lib/models/command');
+var MockUI = require('../helpers/mock-ui');
 var command;
 var called = false;
-var ui = {};
 
 beforeEach(function() {
-  command = new Command({
-    name: 'fake-command',
-    run: function() {}
-  });
-  command.leek = {
+  var analytics = {
     track: function() {
       called = true;
     }
   };
+
+  var FakeCommand = Command.extend({
+    name: 'fake-command',
+    run: function() {}
+  });
+
+  command = new FakeCommand({
+    ui: new MockUI(),
+    analytics: analytics
+  });
 });
 
 afterEach(function() {
   command = null;
 });
 
-describe('Leek', function() {
+describe('analytics', function() {
   it('track gets invoked on command.run()', function() {
-    command.run(ui, {
+    command.validateAndRun({
       cliArgs: []
     }, {});
-    assert.ok(called);
+
+    assert.ok(called, 'expected analytics.track to be called');
   });
 });
