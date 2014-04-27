@@ -8,7 +8,7 @@ var through        = require('through');
 var UI             = require('../../../lib/ui');
 
 var commands = {
-  serve: new Command.extend({
+  serve: Command.extend({
     name: 'serve',
     aliases: ['s'],
     works: 'everywhere',
