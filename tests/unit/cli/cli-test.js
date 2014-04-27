@@ -3,8 +3,10 @@
 var assert   = require('../../helpers/assert');
 var stub     = require('../../helpers/stub').stub;
 var MockUI   = require('../../helpers/mock-ui');
+var MockAnalytics   = require('../../helpers/mock-analytics');
 var CLI      = require('../../../lib/cli/cli');
 var ui;
+var analytics;
 var commands;
 var argv;
 
@@ -13,7 +15,7 @@ var isWithinProject;
 function ember(args) {
   return new CLI({
     ui: ui,
-    analytics: { track: function() { } },
+    analytics: analytics,
     testing: true
   }).run({
     tasks:    {},
@@ -25,11 +27,12 @@ function ember(args) {
 
 function stubCommand(name) {
   commands[name] = require('../../../lib/commands/' + name);
-  return stub(commands[name], 'run');
+  return stub(commands[name].prototype, 'validateAndRun');
 }
 
 beforeEach(function() {
   ui = new MockUI();
+  analytics = new MockAnalytics();
   argv = [];
   commands = { };
   isWithinProject = true;
@@ -38,7 +41,7 @@ beforeEach(function() {
 afterEach(function() {
   for(var key in commands) {
     if (!commands.hasOwnProperty(key)) { continue; }
-    commands[key].run.restore();
+    commands[key].prototype.validateAndRun.restore();
   }
 
   delete process.env.EMBER_ENV;
@@ -50,7 +53,7 @@ function assertVersion(string, message) {
          ('expected version, got: ' + string));
 }
 
-describe('Unit: CLI', function() {
+describe.only('Unit: CLI', function() {
   it('exists', function() {
     assert(CLI);
   });
@@ -286,10 +289,9 @@ describe('Unit: CLI', function() {
   it('ember <valid command>', function() {
     var help = stubCommand('help');
     var serve = stubCommand('serve');
-
     return ember(['serve']).then(function() {
       assert.equal(help.called, 0, 'expected the help command NOT to be run');
-      assert.equal(serve.called, 1,  'expected the foo command to be run');
+      assert.equal(serve.called, 1,  'expected the serve command to be run');
 
       var output = ui.output.trim().split('\n');
       assertVersion(output[0]);
