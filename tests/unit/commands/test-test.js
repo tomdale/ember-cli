@@ -4,7 +4,7 @@ var assert   = require('../../helpers/assert');
 var stub     = require('../../helpers/stub').stub;
 var MockUI   = require('../../helpers/mock-ui');
 var Promise  = require('../../../lib/ext/promise');
-var Task     = require('../../../lib/task');
+var Task     = require('../../../lib/models/task');
 
 var command = require('../../../lib/commands/test');
 

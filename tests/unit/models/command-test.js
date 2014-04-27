@@ -6,7 +6,7 @@ var UI             = require('../../../lib/ui');
 var through        = require('through');
 var Command        = require('../../../lib/models/command');
 
-var serveCommand = new Command.extend({
+var ServeCommand = Command.extend({
   name: 'serve',
   aliases: ['s'],
   works: 'everywhere',
@@ -17,7 +17,7 @@ var serveCommand = new Command.extend({
   usageInstructions: function() {}
 });
 
-var developEmberCLICommand = new Command.extend({
+var DevelopEmberCLICommand = Command.extend({
   name: 'develop-ember-cli',
   works: 'everywhere',
   availableOptions: [
@@ -27,23 +27,24 @@ var developEmberCLICommand = new Command.extend({
   usageInstructions: function() {}
 });
 
-var insideProjectCommand = new Command.extend({
+var InsideProjectCommand = Command.extend({
   name: 'inside-project',
   works: 'insideProject',
   run: function() {},
   usageInstructions: function() {}
 });
 
-var outsideProjectCommand = new Command.extend({
+var OutsideProjectCommand = Command.extend({
   name: 'outside-project',
   works: 'outsideProject',
   run: function() {},
   usageInstructions: function() {}
 });
 
-describe('models/command.js', function() {
+describe.only('models/command.js', function() {
   var output;
   var ui;
+  var analytics;
 
   before(function(){
     output = [];
@@ -54,42 +55,61 @@ describe('models/command.js', function() {
         output.push(data);
       })
     });
+    analytics = {
+      track: function(){}
+    };
   });
 
   it('parseArgs() should parse the command options.', function() {
-    expect(serveCommand.parseArgs(['--port', '80']).commandOptions).to.include({
+    expect(new ServeCommand({
+      ui: ui,
+      analytics: analytics
+    }).parseArgs(['--port', '80'])).to.include({
       port: 80
     });
   });
 
   it('parseArgs() should find abbreviated command options.', function() {
-    expect(serveCommand.parseArgs(['s', '-p', '80']).parsedArgs).to.include({
+    expect(new ServeCommand({
+      ui: ui,
+      analytics: analytics
+    }).parseArgs(['-p', '80'])).to.include({
       port: 80
     });
   });
 
   it('parseArgs() should set default option values.', function() {
-    expect(serveCommand.parseArgs([]).parsedArgs).to.include({
+    expect(new ServeCommand({
+      ui: ui,
+      analytics: analytics
+    }).parseArgs([])).to.include({
       port: 4200
     });
   });
 
   it('validateAndRun() should print a message if a required option is missing.', function() {
-    developEmberCLICommand.validateAndRun([]);
+    new DevelopEmberCLICommand({
+      ui: ui,
+      analytics: analytics
+    }).validateAndRun([]);
     expect(output.shift()).to.match(/requires the option.*package-name/);
   });
 
   it('validateAndRun() should print a message if outside a project and command is not valid there.', function() {
-    insideProjectCommand.ui = ui;
-    insideProjectCommand.isWithinProject = false;
-    insideProjectCommand.validateAndRun([]);
-    expect(output.shift()).to.match(/You cannot use.*inside an ember-cli project/);
+    new InsideProjectCommand({
+      ui: ui,
+      analytics: analytics,
+      isWithinProject: false
+    }).validateAndRun([]);
+    expect(output.shift()).to.match(/You have to be inside an ember-cli project/);
   });
 
   it('validateAndRun() should print a message if inside a project and command is not valid there.', function() {
-    outsideProjectCommand.ui = ui;
-    outsideProjectCommand.isWithinProject = true;
-    outsideProjectCommand.validateAndRun([]);
+    new OutsideProjectCommand({
+      ui: ui,
+      analytics: analytics,
+      isWithinProject: true
+    }).validateAndRun([]);
     expect(output.shift()).to.match(/You cannot use.*inside an ember-cli project/);
   });
 });
