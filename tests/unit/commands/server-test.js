@@ -1,10 +1,10 @@
 'use strict';
 
-var ServeCommand;
-var assert = require('../../helpers/assert');
-var stub = require('../../helpers/stub').stub;
-var MockUI = require('../../helpers/mock-ui');
+var assert        = require('../../helpers/assert');
+var stub          = require('../../helpers/stub').stub;
+var MockUI        = require('../../helpers/mock-ui');
 var MockAnalytics = require('../../helpers/mock-analytics');
+var ServeCommand;
 var tasks;
 
 describe('server command', function() {

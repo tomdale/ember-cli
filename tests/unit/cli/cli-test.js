@@ -11,6 +11,7 @@ var commands;
 var argv;
 
 var isWithinProject;
+
 // helper to similate running the CLI
 function ember(args) {
   return new CLI({
@@ -21,7 +22,11 @@ function ember(args) {
     tasks:    {},
     commands: commands,
     cliArgs:  args || [],
-    isWithinProject: isWithinProject // similate being inside or outside a project
+    project: {
+      isEmberCLIProject: function() {  // similate being inside or outside of a project
+        return isWithinProject;
+      }
+    }
   });
 }
 
@@ -53,7 +58,7 @@ function assertVersion(string, message) {
          ('expected version, got: ' + string));
 }
 
-describe.only('Unit: CLI', function() {
+describe('Unit: CLI', function() {
   it('exists', function() {
     assert(CLI);
   });

@@ -1,17 +1,19 @@
 'use strict';
 
+var path            = require('path');
 var assert          = require('../../helpers/assert');
 var MockUI          = require('../../helpers/mock-ui');
 var MockAnalytics   = require('../../helpers/mock-analytics');
 var rewire          = require('rewire');
 var stubPath        = require('../../helpers/stub').stubPath;
+var Promise  = require('../../../lib/ext/promise');
 var InitCommand;
 
 describe('init command', function() {
   var ui;
   var analytics;
 
-  before(function() {
+  beforeEach(function() {
     ui = new MockUI();
     analytics = new MockAnalytics();
     InitCommand = rewire('../../../lib/commands/init');
@@ -25,7 +27,44 @@ describe('init command', function() {
         analytics: analytics
       }).validateAndRun([]);
     }, undefined);
+  });
 
-    assert.equal(ui.output, 'Due to an issue with `compileES6` an application name of `test` cannot be used.');
+  it('Uses the name of the closest project to when calling installBlueprint', function() {
+
+    var env = {
+      project: {pkg: { name: 'some-random-name'}},
+      tasks: {
+        installBlueprint: {
+          run: function(ui, blueprintOpts) {
+            assert.equal(blueprintOpts.rawName, 'some-random-name');
+            return Promise.reject('Called run');
+          }
+        }
+      }
+    };
+
+    return command.run(env, {})
+      .catch(function(reason) {
+        assert.equal(reason, 'Called run');
+      });
+
+  });
+
+  it('Uses process.cwd if no package is found when calling installBlueprint', function() {
+    var env = {
+      tasks: {
+        installBlueprint: {
+          run: function(ui, blueprintOpts) {
+            assert.equal(blueprintOpts.rawName, path.basename(process.cwd()));
+            return Promise.reject('Called run');
+          }
+        }
+      }
+    };
+
+    return command.run(env, {})
+      .catch(function(reason) {
+        assert.equal(reason, 'Called run');
+      });
   });
 });
